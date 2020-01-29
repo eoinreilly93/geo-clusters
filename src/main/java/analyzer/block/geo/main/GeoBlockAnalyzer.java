@@ -24,7 +24,7 @@ public class GeoBlockAnalyzer {
     private final int width;
     private final int height;
     private final String csvFilePath;
-    private final List<Geo> geoList = new ArrayList<>();
+    private final Map<Integer, Geo> geoMap = new HashMap<>();
     private final Map<Point, Geo> coordMap = new HashMap<>();
     private GeoResult result = new GeoResult();
 
@@ -49,7 +49,7 @@ public class GeoBlockAnalyzer {
     }
 
     public GeoResult getLargestGeoBlock() {
-        for(final Geo geo : this.geoList) {
+        for(final Geo geo : this.geoMap.values()) {
             final List<Geo> visited = new ArrayList<>();
             search(geo, visited);
         }
@@ -87,12 +87,12 @@ public class GeoBlockAnalyzer {
                     try {
                         dateOccupied = LocalDate.parse(geoData[2], formatter);
                     }
-                    catch (DateTimeParseException e) {
+                    catch (final DateTimeParseException e) {
                         //throw new IllegalArgumentException("There input date is invalid on line: " + lineNumber);
                         dateOccupied = LocalDate.now();
                     }
                 }
-                this.geoList.add(new Geo(Integer.parseInt(geoData[0]), geoData[1], dateOccupied));
+                this.geoMap.put(Integer.parseInt(geoData[0]), new Geo(Integer.parseInt(geoData[0]), geoData[1], dateOccupied));
             }
         }
     }
@@ -102,12 +102,10 @@ public class GeoBlockAnalyzer {
         for (int i = this.height - 1; i >= 0; i--) {
             int blockId = (i * this.width);
             for (int j = 0; j < this.width; j++) {
-                for (final Geo geo : this.geoList) {
-                    if (blockId == geo.getId()) {
-                        geo.setCoordinates(i,j);
-                        this.coordMap.put(geo.getCoordinates(), geo);
-                        break;
-                    }
+                if(this.geoMap.containsKey(blockId)) {
+                    final Geo geo = this.geoMap.get(blockId) ;
+                    geo.setCoordinates(i,j);
+                    this.coordMap.put(geo.getCoordinates(), geo);
                 }
                 blockId++;
             }
@@ -115,7 +113,7 @@ public class GeoBlockAnalyzer {
     }
 
     private void calculateGeoNeighbours() {
-        for (final Geo geo : this.geoList) {
+        for (final Geo geo : this.geoMap.values()) {
             addNeighboursToGeo(geo);
         }
     }
@@ -142,7 +140,7 @@ public class GeoBlockAnalyzer {
     }
 
     private void printNeighbours() {
-        for (final Geo geo : this.geoList) {
+        for (final Geo geo : this.geoMap.values()) {
             System.out.println("Geo " + geo.getId() + " has the following neighbours: ");
             for(final Geo g : geo.getNeighbours()) {
                 System.out.println(g.getId());

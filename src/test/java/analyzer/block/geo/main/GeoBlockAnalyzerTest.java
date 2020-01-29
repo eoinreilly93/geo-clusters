@@ -12,7 +12,7 @@ class GeoBlockAnalyzerTest {
 
     @org.junit.jupiter.api.BeforeEach
     void setUp() throws IOException {
-        this.geoBlockAnalyzer = new GeoBlockAnalyzer(10000, 10000, "src/main/resources/geos.csv");
+        this.geoBlockAnalyzer = new GeoBlockAnalyzer(10000, 10000, "src/main/resources/geos2.csv");
     }
 
     @org.junit.jupiter.api.Test
