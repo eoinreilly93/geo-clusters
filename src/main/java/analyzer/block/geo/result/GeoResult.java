@@ -3,6 +3,7 @@ package analyzer.block.geo.result;
 import analyzer.block.geo.model.Geo;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class GeoResult {
@@ -17,6 +18,7 @@ public class GeoResult {
     }
 
     public List<Geo> getGeosInBlock() {
+        this.geosInBlock.sort(Comparator.comparingInt(Geo::getId));
         return this.geosInBlock;
     }
 
