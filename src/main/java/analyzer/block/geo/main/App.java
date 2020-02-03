@@ -8,7 +8,7 @@ public class App {
 
     public static void main(final String[] args) throws IOException {
         final long start = System.currentTimeMillis();
-        final GeoBlockAnalyzer geoBlockAnalyzer = new GeoBlockAnalyzer(10000, 10000, "src/main/resources/geos2.csv");
+        final GeoBlockAnalyzer geoBlockAnalyzer = new GeoBlockAnalyzer(10000, 10000, "src/main/resources/geosLarge.csv");
         final GeoResult result = geoBlockAnalyzer.getLargestGeoBlock();
         final long end = System.currentTimeMillis();
 

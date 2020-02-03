@@ -12,29 +12,38 @@ import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 
 public class GeoBlockAnalyzer {
 
-    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(" yyyy-MM-dd");
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private final int width;
     private final int height;
     private final String csvFilePath;
-    private final Map<Integer, Geo> geoMap = new HashMap<>();
-    private final Map<Point, Geo> coordMap = new HashMap<>();
     private GeoResult result = new GeoResult();
 
+    // Map of the geo id and respective geo object
+    private final Map<Integer, Geo> geoMap = new HashMap<>();
+    // Map of coordinates to each geo in the grid
+    private final Map<Point, Geo> coordMap = new HashMap<>();
+
+    /**
+     * Constructs a geo grid of the given width and height, populated with the geo data provided in the csv file
+     *
+     * @param width the width of the grid
+     * @param height the height of the grid
+     * @param csvFilePath the csv file containing the geo data
+     * @throws IOException
+     */
     public GeoBlockAnalyzer(final int width, final int height, final String csvFilePath) throws IOException {
 
         if(!Files.exists(Paths.get(csvFilePath)) || Files.isDirectory(Paths.get(csvFilePath))) {
             throw new FileNotFoundException(csvFilePath);
         }
 
-        if(width == 0 || height == 0) {
-            throw new IllegalArgumentException("Input height or width is 0");
+        if(width <= 0 || height <= 0) {
+            throw new IllegalArgumentException("Input height or width is 0 or smaller");
         }
 
         this.width = width;
@@ -47,6 +56,9 @@ public class GeoBlockAnalyzer {
         //printNeighbours();
     }
 
+    /**
+     * @return the largest geo block in the input grid
+     */
     public GeoResult getLargestGeoBlock() {
         for(final Geo geo : this.geoMap.values()) {
             final List<Geo> visited = new ArrayList<>();
@@ -55,14 +67,30 @@ public class GeoBlockAnalyzer {
         return this.result;
     }
 
-    private void search(final Geo geo, final List<Geo> visited) {
-        visited.add(geo);
-        for(final Geo g : geo.getNeighbours()) {
-            if(!visited.contains(g)) {
-                search(g, visited);
+    /**
+     * Iterative DFS implementation to find largest geo block.
+     *
+     * @param geo the geo to be evaluated
+     * @param visited list of visited geos
+     */
+    private void search(Geo geo, final List<Geo> visited) {
+        final Deque<Geo> stack = new LinkedList<>();
+        stack.push(geo);
+        while(!stack.isEmpty()) {
+            geo = stack.pop();
+            if(visited.contains(geo)) {
+                continue;
+            }
+            visited.add(geo);
+
+            final List<Geo> neighbours = geo.getNeighbours();
+            for(int i = neighbours.size() - 1; i >= 0; i--) {
+                final Geo g = neighbours.get(i);
+                if(!visited.contains(g)) {
+                    stack.push(g);
+                }
             }
         }
-
         if(this.result.getSize() < visited.size()) {
             this.result = new GeoResult(visited);
         }
@@ -79,17 +107,18 @@ public class GeoBlockAnalyzer {
 
                 //Handle for empty csv cells
                 for(int i = 0; i < geoData.length; i++) {
+                    //Remove leading and trailing whitespace
+                    geoData[i] = geoData[i].replace(" ", "");
+
                     if (geoData[i].isEmpty() || geoData.length > 3) {
                         throw new IllegalArgumentException("There is missing data in the csv file at line: " + lineNumber);
                     }
-
-                    try {
-                        dateOccupied = LocalDate.parse(geoData[2], formatter);
-                    }
-                    catch (final DateTimeParseException e) {
-                        //throw new IllegalArgumentException("There input date is invalid on line: " + lineNumber);
-                        dateOccupied = LocalDate.now();
-                    }
+                }
+                try {
+                    dateOccupied = LocalDate.parse(geoData[2], formatter);
+                }
+                catch (final DateTimeParseException e) {
+                    throw new IllegalArgumentException("There input date is invalid on line: " + lineNumber);
                 }
                 this.geoMap.put(Integer.parseInt(geoData[0]), new Geo(Integer.parseInt(geoData[0]), geoData[1], dateOccupied));
             }
