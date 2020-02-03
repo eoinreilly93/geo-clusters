@@ -39,7 +39,7 @@ class GeoBlockAnalyzerTest {
         try {
             this.geoBlockAnalyzer = new GeoBlockAnalyzer(100, 300, "src/main/resources/geosWithMissingData.csv");
         }
-        catch(IllegalArgumentException e){
+        catch(final IllegalArgumentException e){
             assertTrue(e.getMessage().contains("There is missing data in the csv file at line: 4"));
         }
     }
@@ -49,14 +49,14 @@ class GeoBlockAnalyzerTest {
         try {
             this.geoBlockAnalyzer = new GeoBlockAnalyzer(0, 5, "src/main/resources/geosSmall.csv");
         }
-        catch(IllegalArgumentException e){
+        catch(final IllegalArgumentException e){
             assertTrue(e.getMessage().contains("Input height or width is 0 or smaller"));
         }
 
         try {
             this.geoBlockAnalyzer = new GeoBlockAnalyzer(-1, -8, "src/main/resources/geosSmall.csv");
         }
-        catch(IllegalArgumentException e){
+        catch(final IllegalArgumentException e){
             assertTrue(e.getMessage().contains("Input height or width is 0 or smaller"));
         }
     }

@@ -66,7 +66,7 @@ public class Geo {
 
         final Geo geo = (Geo) obj;
         return this.id == geo.getId() &&
-                this.name == geo.getName() &&
+                this.name.equals(geo.getName()) &&
                 this.dateOccupied == geo.getDateOccupied();
     }
 }
