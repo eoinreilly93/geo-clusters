@@ -51,7 +51,7 @@ public class GeoBlockAnalyzer {
         this.csvFilePath = csvFilePath;
 
         populateGeoGrid();
-        populateGeoMap();
+        populateCoordinatesMap();
         calculateGeoNeighbours();
         //printNeighbours();
     }
@@ -96,6 +96,11 @@ public class GeoBlockAnalyzer {
         }
     }
 
+    /**
+     * Creates a map of the geo grid from the csv file data
+     *
+     * @throws IOException
+     */
     private void populateGeoGrid() throws IOException {
         try (final BufferedReader br = Files.newBufferedReader(Paths.get(this.csvFilePath))) {
             int lineNumber = 0;
@@ -125,7 +130,10 @@ public class GeoBlockAnalyzer {
         }
     }
 
-    private void populateGeoMap() {
+    /**
+     * Create a map of each coordinate in the grid to its respective geo
+     */
+    private void populateCoordinatesMap() {
         // Using the geo id, calculate its point on the grid
         for (int i = this.height - 1; i >= 0; i--) {
             int blockId = (i * this.width);
@@ -150,14 +158,14 @@ public class GeoBlockAnalyzer {
         final int x = geo.getCoordinates().x;
         final int y = geo.getCoordinates().y;
 
-        final Point[] tempArray = {
+        final Point[] possibleNeighbours = {
                                 new Point(x, y+1),
             new Point(x-1, y),                  new Point(x+1, y),
                                 new Point(x, y-1)
         };
 
         Geo g;
-        for (final Point p : tempArray) {
+        for (final Point p : possibleNeighbours) {
             if (this.coordMap.containsKey(p)) {
                 g = this.coordMap.get(p);
                 if(g != null) {
