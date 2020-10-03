@@ -1,4 +1,4 @@
-package analyzer.block.geo.main;
+package analyzer.block.geo.utility;
 
 import java.io.FileWriter;
 import java.io.IOException;

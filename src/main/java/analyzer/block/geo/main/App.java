@@ -6,16 +6,15 @@ import java.io.IOException;
 
 public class App {
 
-    public static void main(final String[] args) throws IOException {
-        final GeoBlockAnalyzer geoBlockAnalyzer =
-                new GeoBlockAnalyzer(10000, 10000, "src/main/resources/geosLarge.csv");
-        final long start = System.currentTimeMillis();
-        final GeoResult result = geoBlockAnalyzer.getLargestGeoBlock();
-        final long end = System.currentTimeMillis();
-
-        System.out.println("Run time: " + (end - start) + " ms");
-        System.out.println(result.toString());
-
-        System.out.println(5 / 7);
+  public static void main(final String[] args) throws IOException {
+    if (args.length > 3) {
+      throw new IllegalArgumentException(
+          "You provided too many arguments. You need to provide the GeoBlock width, height and csv file");
+    } else {
+      final GeoBlockAnalyzer geoBlockAnalyzer =
+          new GeoBlockAnalyzer(Integer.parseInt(args[0]), Integer.parseInt(args[1]), args[2]);
+      final GeoResult result = geoBlockAnalyzer.getLargestGeoBlock();
+      System.out.println(result.toString());
     }
+  }
 }
