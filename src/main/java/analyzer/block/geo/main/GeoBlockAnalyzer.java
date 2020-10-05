@@ -159,13 +159,9 @@ public class GeoBlockAnalyzer {
       new Point(x, y + 1), new Point(x - 1, y), new Point(x + 1, y), new Point(x, y - 1)
     };
 
-    Geo g;
     for (final Point p : possibleNeighbours) {
       if (this.coordMap.containsKey(p)) {
-        g = this.coordMap.get(p);
-        if (g != null) {
-          geo.getNeighbours().add(g);
-        }
+        geo.addNeighbour(this.coordMap.get(p));
       }
     }
   }

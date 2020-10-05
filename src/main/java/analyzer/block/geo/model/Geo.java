@@ -47,7 +47,11 @@ public class Geo {
   }
 
   public List<Geo> getNeighbours() {
-    return this.neighbours;
+    return List.copyOf(this.neighbours);
+  }
+
+  public void addNeighbour(final Geo geo) {
+    this.neighbours.add(geo);
   }
 
   @Override
